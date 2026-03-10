@@ -19,7 +19,7 @@ adapter_ch = Channel.fromPath(params.adapters)
 
 // Define fastqc process
 process fastqc {
-    publishDir "${params.outdir}/quality-control-${sample}/", mode: 'copy', overwrite: true
+    publishDir "${params.outDir}/quality-control-${sample}/", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(reads)
