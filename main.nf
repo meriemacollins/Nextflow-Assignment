@@ -9,7 +9,7 @@ log.info """
       LIST OF PARAMETERS
 ================================
 Reads            : ${params.reads}
-Output-folder    : ${params.outdir}
+Output-folder    : ${params.outDir}
 Adapters         : ${params.adapters}
 """
 
