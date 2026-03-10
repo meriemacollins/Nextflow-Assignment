@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl=2
 
-params.reads = 'data/*_{1,2}.fq.gz'
+params.reads = '/Users/maia/Desktop/Nextflow-Assignment'
 params.outDir = 'outputs/'
 params.adapters = 'adapters.fa'
 log.info """
