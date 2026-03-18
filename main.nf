@@ -15,6 +15,7 @@ Adapters         : ${params.adapters}
 
 // Create read channel
 read_pairs_ch = Channel.fromFilePairs(params.reads, checkIfExists: true).map { sample, reads -> tuple(sample, reads.collect { it.toAbsolutePath() }) }
+read_pairs_ch.view()
 adapter_ch = Channel.fromPath(params.adapters)
 
 // Define fastqc process
@@ -54,7 +55,7 @@ process trimmomatic {
 
 // Run the workflow
 workflow {
-    read_pairs_ch.view()
+    
     fastqc(read_pairs_ch)
     trimmomatic(read_pairs_ch, adapter_ch)
 }
