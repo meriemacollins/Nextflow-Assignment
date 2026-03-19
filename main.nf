@@ -2,9 +2,9 @@
 
 nextflow.enable.dsl=2
 
-params.reads = 'data/LG12*'
-params.outDir = 'outputs/'
-params.adapters = 'adapters.fa'
+params.reads = 'data/*_{1, 2}.fq'
+params.outDir = './outputs/'
+params.adapters = 'data/adapters.fa'
 log.info """
       LIST OF PARAMETERS
 ================================
