@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl=2
 
-params.reads = 'fastqs/*_{1,2}.fq.gz'
+params.reads = 'data/LG12*'
 params.outDir = 'outputs/'
 params.adapters = 'adapters.fa'
 log.info """
