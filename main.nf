@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 params.reads = 'data/*_{1, 2}.fq.gz'
 params.outdir = 'outputs/'
-params.adapters = 'data/adapters.fa'
+params.adapters = 'adapters.fa'
 log.info """
       LIST OF PARAMETERS
 ================================
@@ -19,7 +19,7 @@ adapter_ch = Channel.fromPath(params.adapters)
 
 // Define fastqc process
 process fastqc {
-    publishDir "${params.outDir}/quality-control-${sample}/", mode: 'copy', overwrite: true
+    publishDir "${params.outdir}/quality-control-${sample}/", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(reads)
@@ -47,7 +47,7 @@ process trimmomatic {
 
     script:
     """
-    trimmomatic PE -phred33 ${reads[0]} ${reads[1]} ${sample}_1.trimmed.fq.gz ${sample}_1.discarded.fq.gz ${sample}_2.trimmed.fq.gz ${sample}_2.discarded.fq.gz  
+    trimmomatic PE -phred33 ${reads[0]} ${reads[1]} ${sample}_1.trimmed.fq.gz ${sample}_1.discarded.fq.gz ${sample}_2.trimmed.fq.gz ${sample}_2.discarded.fq.gz \
     ILLUMINACLIP:${adapters_file}:2:30:10
     """
 }
