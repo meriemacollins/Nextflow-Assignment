@@ -5,17 +5,21 @@ nextflow.enable.dsl=2
 params.reads = 'data/*_{1,2}.fq'
 params.outdir = 'outputs/'
 params.adapters = 'adapters.fa'
+params.genome = 'extras/LG12.fasta'
+
 log.info """
       LIST OF PARAMETERS
 ================================
 Reads            : ${params.reads}
 Output-folder    : ${params.outdir}
 Adapters         : ${params.adapters}
+Genome           : ${params.genome}
 """
 
 // Create read channel
 read_pairs_ch = Channel.fromFilePairs(params.reads, checkIfExists: true).map { sample, reads -> tuple(sample, reads.collect { it.toAbsolutePath() }) }
 adapter_ch = Channel.fromPath(params.adapters)
+genome_ch = Channel.fromPath(params.genome)
 
 // Define fastqc process
 process fastqc {
@@ -35,7 +39,7 @@ process fastqc {
 
 // Process trimmomatic
 process trimmomatic {
-    publishDir "${params.outdir}/trimmed-reads-${sample}/", mode: 'copy'
+    publishDir "${params.outdir}/trimmed-reads-${sample}/", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(reads)
@@ -52,11 +56,29 @@ process trimmomatic {
     """
 }
 
+// Process 
+process bwa_mem2 {
+    publishDir "${params.outdir}/alignment-${sample}/", mode: 'copy', overwrite: true
+    
+    input:
+    tuple val(sample), path(read1), path(read2)
+    path genome
+
+    output:
+    tuple val(sample), path("${sample}.sorted.bam")
+
+   script:
+    """
+    bwa_mem2 index ${genome}
+    bwa_mem2 mem -M -R ${genome} ${read1} ${read2} 
+    """
+}
+
 // Run the workflow
 workflow {
     read_pairs_ch.view()
     fastqc(read_pairs_ch)
     trimmomatic(read_pairs_ch, adapter_ch)
+    bwa_mem2(trimmomatic.out, genome_ch)
 }
-
 
