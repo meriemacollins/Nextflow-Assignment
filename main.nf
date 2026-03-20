@@ -68,7 +68,7 @@ process bwa_mem2 {
 
    script:
     """
-    bwa_mem2 mem -t 4 $task.cpus ${genome} ${reads[0]} ${reads[1]} | samtools sort --threads $task.cpus -o ${sample}.bam - 
+    bwa_mem2 mem -t $task.cpus ${genome} ${reads[0]} ${reads[1]} | samtools sort --threads $task.cpus -o ${sample}.sorted.bam - 
     """
 }
 
