@@ -39,20 +39,19 @@ process fastqc {
 
 // Process trimmomatic
 process trimmomatic {
-    publishDir "${params.outdir}/trimmed-reads-${sample}/", mode: 'copy', overwrite: true
+    publishDir "${params.outdir}/trimmed-reads-${sample}/", mode: 'copy'
 
     input:
     tuple val(sample), path(reads)
     path adapters_file
 
     output:
-    tuple val("${sample}"), path("${sample}*.trimmed.fq.gz")
-    tuple val("${sample}"), path("${sample}*.discarded.fq.gz")
+    tuple val("${sample}"), path("${sample}*.trimmed.fq.gz"), emit: trimmed_fq
+    tuple val("${sample}"), path("${sample}*.discarded.fq.gz"), emit: discarded_fq
 
     script:
     """
-    trimmomatic PE -phred33 ${reads[0]} ${reads[1]} ${sample}_1.trimmed.fq.gz ${sample}_1.discarded.fq.gz ${sample}_2.trimmed.fq.gz ${sample}_2.discarded.fq.gz \
-    ILLUMINACLIP:${adapters_file}:2:30:10
+    trimmomatic PE -phred33 ${reads[0]} ${reads[1]} ${sample}_1.trimmed.fq.gz ${sample}_1.discarded.fq.gz ${sample}_2.trimmed.fq.gz ${sample}_2.discarded.fq.gz ILLUMINACLIP:${adapters_file}:2:30:10
     """
 }
 
@@ -70,7 +69,8 @@ process bwa_mem2 {
    script:
     """
     bwa_mem2 index ${genome}
-    bwa_mem2 mem -M -R ${genome} ${read1} ${read2} 
+    bwa_mem2 mem -t $task.cpus ${genome} ${read1} ${read2}
+    | samtools sort --threads $task.cpus -o ${prefix}.bam - 
     """
 }
 
@@ -79,6 +79,6 @@ workflow {
     read_pairs_ch.view()
     fastqc(read_pairs_ch)
     trimmomatic(read_pairs_ch, adapter_ch)
-    bwa_mem2(trimmomatic.out, genome_ch)
+    bwa_mem2(trimmomatic.out.trimmed_fq, genome_ch)
 }
 
