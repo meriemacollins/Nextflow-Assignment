@@ -79,6 +79,6 @@ workflow {
     read_pairs_ch.view()
     fastqc(read_pairs_ch)
     trimmomatic(read_pairs_ch, adapter_ch)
-    bwa_mem2(trimmed_fq, genome_ch)
+    bwa_mem2(trimmomatic.out.trimmed_fq, genome_ch)
 }
 
