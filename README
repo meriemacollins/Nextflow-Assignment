@@ -1,4 +1,6 @@
 README
 
-trimommatic version 0.40
 nextflow version 25.10.4
+fastqc version 0.12.1
+trimommatic version 0.40
+bwa-mem2 version 2.2.1
